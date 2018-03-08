@@ -1,0 +1,9 @@
+﻿  Window.cpp
+c:\users\wilson\documents\school\cse167\pa3\cse167startercode-master\shader_m.h(73): warning C4101: 'infoLog': unreferenced local variable
+c:\users\wilson\documents\school\cse167\pa3\cse167startercode-master\shader_m.h(72): warning C4101: 'success': unreferenced local variable
+..\Window.cpp(113): warning C4305: 'argument': truncation from 'double' to 'float'
+..\Window.cpp(121): warning C4305: 'argument': truncation from 'double' to 'float'
+..\Window.cpp(518): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+..\Window.cpp(575): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+..\Window.cpp(576): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  GLFWStarterProject.vcxproj -> C:\Users\Wilson\Documents\School\CSE167\PA3\CSE167StarterCode-master\x64\Release\GLFWStarterProject.exe

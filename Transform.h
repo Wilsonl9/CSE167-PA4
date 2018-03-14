@@ -14,15 +14,16 @@ public:
 	~Transform();
 	void draw(glm::mat4 C, Shader* shaderProgram, Camera camera, glm::mat4 projection, bool phong);
 	void update();
-	void addChild(Node* node);
-	void removeChild(Node* node);
-	void translate(float x, float y, float z);
-	void scale(float amount);
-	void scale(float x, float y, float z);
-	void rotate(glm::vec3 rotAxis, float deg);
-	void resetTranslate();
-	void resetScale();
-	void setAnimation(glm::mat4 (*animate)(glm::mat4 M));
+	Transform* addChild(Node* node);
+	Transform* removeChild(Node* node);
+	Transform* translate(float x, float y, float z);
+	Transform* scale(float amount);
+	Transform* scale(float x, float y, float z);
+	Transform* scaleAbs(float x, float y, float z);
+	Transform* rotate(glm::vec3 rotAxis, float deg);
+	Transform* resetTranslate();
+	Transform* resetScale();
+	Transform* setAnimation(glm::mat4 (*animate)(glm::mat4 M));
 
 private:
 	glm::mat4 M; //Transformation Matrix

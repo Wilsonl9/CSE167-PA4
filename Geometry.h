@@ -20,6 +20,7 @@
 #include"Node.h"
 #include"shader_m.h"
 #include"camera.h"
+#include"vboindexer.hpp"
 
 #define X_AXIS 0
 #define Y_AXIS 1
@@ -33,20 +34,25 @@ public:
 	void init(std::string filepath);
 	void update();
 	void draw(glm::mat4 C, Shader* shaderProgram, Camera camera, glm::mat4 projection, bool phong);
+	void addTexture(std::string file);
 
 private:
 	bool initialized;
 	std::vector<unsigned int> indices;
+	std::vector<unsigned int> tindices;
 	std::vector<unsigned int> nindices;
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec3> normals;
+	std::vector<glm::vec2> texCoord;
 	glm::mat4 toWorld;
 	glm::mat4 totalRot;
 	glm::mat4 rotOffset;
 	GLuint VBO;
 	GLuint VAO;
 	GLuint EBO;
+	GLuint TBO;
 	GLuint NBO;
+	GLuint textureID;
 	int direction;
 	float angle;
 	float scalePointAmount;
@@ -57,7 +63,8 @@ private:
 	float x;
 	float y;
 	float z;
-	bool transFirst = false;
+	bool transFirst;
+	bool hasTexture;
 
 	void parse(const char* filepath);
 	void centerAndResize();

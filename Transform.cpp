@@ -22,7 +22,10 @@ Transform::~Transform()
 	std::list<Node*>::iterator end = children.end();
 	for (it; it != end; ++it)
 	{
-		delete (*it);
+		if((*it)->heap)
+		{
+			delete (*it);
+		}
 	}
 }
 
@@ -51,47 +54,62 @@ void Transform::update()
 	}
 }
 
-void Transform::addChild(Node* node)
+Transform* Transform::addChild(Node* node)
 {
 	children.push_back(node);
+	return this;
 }
 
-void Transform::removeChild(Node * node)
+Transform* Transform::removeChild(Node * node)
 {
 	children.remove(node);
+	return this;
 }
 
-void Transform::translate(float x, float y, float z)
+Transform* Transform::translate(float x, float y, float z)
 {
 	totalTrans = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, z)) * totalTrans;
+	return this;
 }
 
-void Transform::scale(float amount)
+Transform* Transform::scale(float amount)
 {
 	totalScale = glm::scale(glm::mat4(1.0f), glm::vec3(pow(1.2f, amount))) * totalScale;
+	return this;
 }
 
-void Transform::scale(float x, float y, float z)
+Transform* Transform::scale(float x, float y, float z)
 {
 	totalScale = glm::scale(glm::mat4(1.0f), glm::vec3(pow(1.2f, x), pow(1.2f, y), pow(1.2f, z))) * totalScale;
+	return this;
 }
 
-void Transform::rotate(glm::vec3 rotAxis, float deg)
+Transform* Transform::scaleAbs(float x, float y, float z)
+{
+	totalScale = glm::scale(glm::mat4(1.0f), glm::vec3(x, y, z)) * totalScale;
+	return this;
+}
+
+Transform* Transform::rotate(glm::vec3 rotAxis, float deg)
 {
 	totalRot = glm::rotate(glm::mat4(1.0f), deg / 180.0f * glm::pi<float>(), rotAxis) * totalRot;
+	return this;
 }
 
-void Transform::resetTranslate()
+Transform* Transform::resetTranslate()
 {
 	totalTrans = glm::mat4(1.0f);
+	return this;
 }
 
-void Transform::resetScale()
+Transform* Transform::resetScale()
 {
 	totalScale = glm::mat4(1.0f);
+	return this;
 }
 
-void Transform::setAnimation(glm::mat4 (*animate)(glm::mat4 M))
+Transform* Transform::setAnimation(glm::mat4 (*animate)(glm::mat4 M))
 {
 	this->animate = animate;
+	return this;
 }

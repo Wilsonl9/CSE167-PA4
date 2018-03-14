@@ -29,6 +29,7 @@
 #include "Node.h"
 #include "Geometry.h"
 #include "Curve.h"
+#include "TreeGenerator.h"
 
 class Window
 {
@@ -94,6 +95,8 @@ private:
 	static glm::mat4* curveConstants;
 	static Curve* curves;
 	static Shader* curveShaderProgram;
+
+	static TreeGenerator* treeGenerator;
 
 	static glm::vec3 trackballMapping(GLFWwindow* window);
 

@@ -2,6 +2,7 @@
 
 Node::Node()
 {
+	heap = true;
 }
 
 Node::~Node()

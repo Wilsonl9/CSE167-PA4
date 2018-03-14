@@ -13,6 +13,8 @@ public:
 	virtual void draw(glm::mat4 C, Shader* shaderProgram, Camera camera, glm::mat4 projection, bool phong) = 0;
 	virtual void update() = 0;
 
+	bool heap;
+
 protected:
 
 private:

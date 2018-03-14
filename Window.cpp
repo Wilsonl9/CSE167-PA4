@@ -59,6 +59,9 @@ Curve* Window::curves;
 Shader* Window::curveShaderProgram;
 unsigned int LINESEG = 1101;
 
+Transform* tree;
+TreeGenerator* Window::treeGenerator;
+
 void Window::initialize_objects()
 {
 	shaderProgram = new Shader(VERTEX_SHADER_PATH, FRAGMENT_SHADER_PATH);
@@ -88,7 +91,10 @@ void Window::initialize_objects()
 	skybox = new SkyBox(faces, skyboxShaderProgram);
 	sceneGraph = new Transform();
 	
-	Transform* robotNode = new Transform();
+	treeGenerator = new TreeGenerator();
+	tree = treeGenerator->generateTree(2);
+	sceneGraph->addChild(tree);
+	/*Transform* robotNode = new Transform();
 	androidHead = new Geometry();
         androidHead->init("c:\\Users\\Wilson\\Documents\\School\\CSE167\\PA3\\CSE167StarterCode-master\\robot-parts\\head.obj");
 	androidBody = new Geometry();
@@ -147,7 +153,7 @@ void Window::initialize_objects()
 
 	//duplicating the robot
 	//sceneGraph->addChild(robotNode);
-	for(int i = 0; i < 5; ++i)
+	for(int i = 0; false && i < 5; ++i)
 	{
 		for(int j = 0; j < 5; ++j)
 		{
@@ -155,7 +161,7 @@ void Window::initialize_objects()
 			newChild->addChild(robotNode);
 			sceneGraph->addChild(newChild);
 		}
-	}
+	}*/
 
 	//bezier curve
 	curvePoints = new glm::vec3[20];
@@ -214,6 +220,8 @@ void Window::clean_up()
 	delete curvePoints;
 	delete curveConstants;
 	delete curves;
+	delete sceneGraph;
+	delete treeGenerator;
 }
 
 GLFWwindow* Window::create_window(int width, int height)
@@ -476,6 +484,13 @@ void Window::key_callback(GLFWwindow* window, int key, int scancode, int action,
 				toDisplayDirLight = &dirLight;
 			}
 			break;
+		}
+		case GLFW_KEY_G:
+		{
+			sceneGraph->removeChild(tree);
+			delete tree;
+			tree = treeGenerator->generateTree(5);
+			sceneGraph->addChild(tree);
 		}
 		}
 	}

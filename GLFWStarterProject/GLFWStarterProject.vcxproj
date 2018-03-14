@@ -34,6 +34,8 @@
     <ClInclude Include="..\SpotLight.h" />
     <ClInclude Include="..\stb_image.h" />
     <ClInclude Include="..\Transform.h" />
+    <ClInclude Include="..\TreeGenerator.h" />
+    <ClInclude Include="..\vboindexer.hpp" />
     <ClInclude Include="..\Window.h" />
   </ItemGroup>
   <ItemGroup>
@@ -49,6 +51,8 @@
     <ClCompile Include="..\SkyBox.cpp" />
     <ClCompile Include="..\SpotLight.cpp" />
     <ClCompile Include="..\Transform.cpp" />
+    <ClCompile Include="..\TreeGenerator.cpp" />
+    <ClCompile Include="..\vboindexer.cpp" />
     <ClCompile Include="..\Window.cpp" />
   </ItemGroup>
   <ItemGroup>

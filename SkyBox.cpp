@@ -72,6 +72,7 @@ SkyBox::~SkyBox()
 {
 	glDeleteVertexArrays(1, &skyboxVAO);
 	glDeleteBuffers(1, &skyboxVAO);
+	glDeleteBuffers(1, &cubemapTexture);
 
 	glfwTerminate();
 }
@@ -114,7 +115,7 @@ void SkyBox::draw(Shader* skyboxShader, Camera camera, int width, int height)
 	glDepthFunc(GL_FALSE);  // change depth function so depth test passes when values are equal to depth buffer's content
 	skyboxShader->use();
 	glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // remove translation from the view matrix
-	glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)width / (float)height, 0.1f, 1000.0f);
+	glm::mat4 projection = glm::perspective(ZOOM, (float)width / (float)height, 0.1f, 1000.0f);
 	skyboxShader->setMat4("view", view);
 	skyboxShader->setMat4("projection", projection);
 	// skybox cube

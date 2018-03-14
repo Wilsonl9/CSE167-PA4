@@ -51,6 +51,7 @@ in float sampleExtraOutput;
 in vec3 NormalColor;
 in vec3 FragPos;
 in vec3 Normal;
+in vec2 TexCoord;
 
 // You can output many things. The first vec4 type output determines the color of the fragment
 out vec4 color;
@@ -66,6 +67,9 @@ uniform int phong;
 uniform int pointCount;
 uniform int spotCount;
 uniform int dirCount;
+
+uniform int hasTex;
+uniform sampler2D ourTexture;
 
 // Function prototypes
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
@@ -131,8 +135,13 @@ void main()
 	else
 	{
 		result = NormalColor;
+		if(hasTex == 1)
+		{
+			color = texture(ourTexture, TexCoord);
+			return;
+		}
 	}
-	color = vec4(result, 1.0);
+	color = vec4(result, 1.0f);
 
 
     

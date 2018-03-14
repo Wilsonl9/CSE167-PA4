@@ -1,8 +1,12 @@
 #include "Geometry.h"
+//#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 Geometry::Geometry()
 {
 	initialized = false;
+	transFirst = false;
+	hasTexture = false;
 }
 
 Geometry::~Geometry()
@@ -15,6 +19,10 @@ Geometry::~Geometry()
 		glDeleteBuffers(1, &VBO);
 		glDeleteBuffers(1, &EBO);
 		glDeleteBuffers(1, &NBO);
+		if (hasTexture)
+		{
+			glDeleteBuffers(1, &textureID);
+		}
 	}
 }
 
@@ -93,10 +101,67 @@ void Geometry::draw(glm::mat4 C, Shader* shaderProgram, Camera camera, glm::mat4
 	shaderProgram->setBool("phong", phong);
 	// Now draw. We simply need to bind the VAO associated with it.
 	glBindVertexArray(VAO);
+	if(hasTexture)
+	{
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textureID);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		shaderProgram->setInt("ourTexture", 0);
+		shaderProgram->setInt("hasTex", 1);
+	}
+	else
+	{
+		shaderProgram->setInt("hasTex", 0);
+	}
 	// Tell OpenGL to draw with triangles, using 36 indices, the type of the indices, and the offset to start from
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 	// Unbind the VAO when we're done so we don't accidentally draw extra stuff or tamper with its bound buffers
 	glBindVertexArray(0);
+}
+
+void Geometry::addTexture(std::string file)
+{
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+	int width, height, nrChannels;
+	unsigned char *data = stbi_load(file.c_str(), &width, &height, &nrChannels, 0);
+	if (data)
+	{
+		glBindVertexArray(VAO);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+		glGenBuffers(1, &TBO);
+		glBindBuffer(GL_ARRAY_BUFFER, TBO);
+		glBufferData(GL_ARRAY_BUFFER, texCoord.size() * sizeof(glm::vec3), &texCoord[0], GL_STATIC_DRAW);
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2,// This first parameter x should be the same as the number passed into the line "layout (location = x)" in the vertex shader. In this case, it's 0. Valid values are 0 to GL_MAX_UNIFORM_LOCATIONS.
+			3, // This second line tells us how any components there are per vertex. In this case, it's 3 (we have an x, y, and z component)
+			GL_FLOAT, // What type these components are
+			GL_FALSE, // GL_TRUE means the values should be normalized. GL_FALSE means they shouldn't
+			sizeof(glm::vec3), // Offset between consecutive indices. Since each of our vertices have 3 floats, they should have the size of 3 floats in between
+			(GLvoid*)0); // Offset of the first vertex's component. In our case it's 0 since we don't pad the vertices array with anything.
+						 
+		// Unbind the currently bound buffer so that we don't accidentally make unwanted changes to it.
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		// Unbind the VAO now so we don't accidentally tamper with it.
+		// NOTE: You must NEVER unbind the element array buffer associated with a VAO!*/
+		glBindVertexArray(0);
+		stbi_image_free(data);
+		hasTexture = true;
+	}
+	else
+	{
+		std::cout << "Texture failed to load at path: " << file << std::endl;
+		stbi_image_free(data);
+	}
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
 void Geometry::parse(const char * filepath)
@@ -113,8 +178,13 @@ void Geometry::parse(const char * filepath)
 	float green = 0;
 	float blue = 0;
 	float vertex;
+	float texture;
 	float normal;
 	float notUsed = 0;
+	std::vector<unsigned int> temp_indices;
+	std::vector<glm::vec3> temp_vertices;
+	std::vector<glm::vec3> temp_normals;
+	std::vector<glm::vec2> temp_texCoord;
 
 	if (inFile == NULL)
 	{
@@ -129,12 +199,17 @@ void Geometry::parse(const char * filepath)
 			if (strncmp(vertexType, "vn", 2) == 0)
 			{
 				fscanf(inFile, "%f %f %f\n", &x, &y, &z);
-				normals.push_back(glm::vec3(x, y, z));
+				temp_normals.push_back(glm::vec3(x, y, z));
+			}
+			else if (strncmp(vertexType, "vt", 2) == 0)
+			{
+				fscanf(inFile, "%f %f\n", &x, &y);
+				temp_texCoord.push_back(glm::vec2(x, y));
 			}
 			else if (strncmp(vertexType, "v", 1) == 0)
 			{
 				fscanf(inFile, "%f %f %f %f %f %f\n", &x, &y, &z, &red, &green, &blue);
-				vertices.push_back(glm::vec3(x, y, z));
+				temp_vertices.push_back(glm::vec3(x, y, z));
 			}
 			else if (strncmp(vertexType, "f", 1) == 0)
 			{
@@ -145,17 +220,28 @@ void Geometry::parse(const char * filepath)
 						fscanf(inFile, "/");
 						if (j == 0)
 						{
-							fscanf(inFile, "%f", &vertex);
-							indices.push_back(vertex - 1);
+							if(fscanf(inFile, "%f", &vertex))
+							{
+								temp_indices.push_back(vertex - 1);
+							}
 						}
 						else if (j == 1)
 						{
-							fscanf(inFile, "%f", &notUsed);
+							if(fscanf(inFile, "%f", &texture))
+							{
+								if (strcmp(filepath, "c:\\Users\\Wilson\\Documents\\School\\CSE167\\PA3\\CSE167StarterCode-master\\robot-parts\\head.obj") == 0)
+								{
+									std::cout << texture << std::endl;
+								}
+								tindices.push_back(texture - 1);
+							}
 						}
 						else if (j == 2)
 						{
-							fscanf(inFile, "%f", &normal);
-							nindices.push_back(normal - 1);
+							if(fscanf(inFile, "%f", &normal))
+							{
+								nindices.push_back(normal - 1);
+							}
 						}
 					}
 				}
@@ -165,7 +251,10 @@ void Geometry::parse(const char * filepath)
 			{
 				fscanf(inFile, "%*[^\n]\n");
 			}
+			//vertexType[1] = 0;
 		}
+		indexVBO_slow(temp_vertices, temp_texCoord, temp_normals, temp_indices, tindices, nindices,
+			indices, vertices, texCoord, normals);
 	}
 }
 

@@ -30,6 +30,7 @@
 #include "Geometry.h"
 #include "Curve.h"
 #include "TreeGenerator.h"
+#include "TerrainGenerator.h"
 
 class Window
 {
@@ -97,6 +98,7 @@ private:
 	static Shader* curveShaderProgram;
 
 	static TreeGenerator* treeGenerator;
+	static TerrainGenerator* terrainGenerator;
 
 	static glm::vec3 trackballMapping(GLFWwindow* window);
 

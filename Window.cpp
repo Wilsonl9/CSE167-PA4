@@ -60,7 +60,9 @@ Shader* Window::curveShaderProgram;
 unsigned int LINESEG = 1101;
 
 Transform* tree;
+Geometry* terrain;
 TreeGenerator* Window::treeGenerator;
+TerrainGenerator* Window::terrainGenerator;
 
 void Window::initialize_objects()
 {
@@ -93,7 +95,10 @@ void Window::initialize_objects()
 	
 	treeGenerator = new TreeGenerator();
 	tree = treeGenerator->generateTree(2);
-	sceneGraph->addChild(tree);
+	terrainGenerator = new TerrainGenerator();
+	terrain = terrainGenerator->generateTerrain(3);
+	sceneGraph->addChild(terrain);
+	//sceneGraph->addChild(tree);
 	/*Transform* robotNode = new Transform();
 	androidHead = new Geometry();
         androidHead->init("c:\\Users\\Wilson\\Documents\\School\\CSE167\\PA3\\CSE167StarterCode-master\\robot-parts\\head.obj");
@@ -222,6 +227,9 @@ void Window::clean_up()
 	delete curves;
 	delete sceneGraph;
 	delete treeGenerator;
+	delete tree;
+	delete terrainGenerator;
+	delete terrain;
 }
 
 GLFWwindow* Window::create_window(int width, int height)
@@ -487,10 +495,14 @@ void Window::key_callback(GLFWwindow* window, int key, int scancode, int action,
 		}
 		case GLFW_KEY_G:
 		{
-			sceneGraph->removeChild(tree);
-			delete tree;
-			tree = treeGenerator->generateTree(5);
-			sceneGraph->addChild(tree);
+			//sceneGraph->removeChild(tree);
+			sceneGraph->removeChild(terrain);
+			//delete tree;
+			delete terrain;
+			//tree = treeGenerator->generateTree(3);
+			terrain = terrainGenerator->generateTerrain(100);
+			//sceneGraph->addChild(tree);
+			sceneGraph->addChild(terrain);
 		}
 		}
 	}

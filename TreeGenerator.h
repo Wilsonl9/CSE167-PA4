@@ -29,12 +29,18 @@
 #define Y_AXIS_VEC (glm::vec3(0, 1, 0))
 #define Z_AXIS_VEC (glm::vec3(0, 0, 1))
 
-#define TRUNKHEIGHT (5.0f)
+#define TRUNKHEIGHT (0.5f)
 #define TRUNKWIDTH (1.0f)
+#define Zturn (40.0f)
+#define zturn (-40.0f)
+#define Yturn (40.0f)
+#define yturn (-50.0f)
 //define POTENTIAL(x,level,maxlevel) (((float)(x)) * ((((float)(level)) + 1.0f) / (((float)(maxlevel)) + 1.0f)))
-#define POTENTIAL(x,level,maxlevel) (((float)(x)) * ((((float)(level)) + 1.0f) / (((float)(maxlevel)) + 1.0f)) * ((((float)(level)) + 1.0f) / (((float)(maxlevel)) + 1.0f)))
-//define POTENTIAL(x,level,maxlevel) (((float)(x)) * pow((1.0f / 2.0f), ((maxlevel) - (level))))
-#define RANDOMIZE(min,max) ((((float)((rand() % (max)) + 1)) / 100.0f) + (((float)(min)) / 100.0f))
+#define POTENTIALW(x,level,maxlevel) (((float)(x)) * ((((float)(level)) + 2.0f) / (((float)(maxlevel)) + 2.0f)) * ((((float)(level)) + 1.0f) / (((float)(maxlevel)) + 1.0f)))
+#define POTENTIAL(x,level,maxlevel) (((float)(x)) * pow((9.0f / 10.0f), ((maxlevel) - (level))))
+//define POTENTIALW(x, level, maxlevel) (((float)(x)) * pow((1.0f / 1.1f), (level)))
+//define RANDOMIZE(min,max) ((((float)((rand() % (max)) + 1)) / 100.0f) + (((float)(min)) / 100.0f))
+#define PLUSMINUS(x) (((2.0f * ((float)(x))) * (((float)((rand() % 100) + 1.0f)) / 100.0f)) - ((float)(x)))
 
 class TreeGenerator
 {
@@ -48,7 +54,7 @@ private:
 	std::string leafTextureFile;
 	Geometry branch;
 	Geometry leaf;
-	Transform* createTree(int level, int maxlevel);
+	Transform* createTree(std::string rule, int& index, int level, int maxlevel);
 };
 
 #endif

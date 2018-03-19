@@ -31,10 +31,13 @@ class Geometry : public Node
 public:
 	Geometry();
 	~Geometry();
-	void init(std::string filepath);
+	void init(std::string filepath = "");
 	void update();
 	void draw(glm::mat4 C, Shader* shaderProgram, Camera camera, glm::mat4 projection, bool phong);
 	void addTexture(std::string file);
+	std::vector<glm::vec3>& getVertices();
+	std::vector<glm::vec3>& getNormals();
+	std::vector<unsigned int>& getIndices();
 
 private:
 	bool initialized;

@@ -30,8 +30,11 @@ void Geometry::init(std::string filepath)
 {
 	initialized = true;
 	toWorld = glm::mat4(1.0f);
-	parse(filepath.c_str());
-	centerAndResize();
+	if(filepath.length())
+	{
+		parse(filepath.c_str());
+		centerAndResize();
+	}
 	angle = 0;
 	direction = 0;
 	scalePointAmount = 1;
@@ -162,6 +165,21 @@ void Geometry::addTexture(std::string file)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+}
+
+std::vector<glm::vec3>& Geometry::getVertices()
+{
+	return vertices;
+}
+
+std::vector<glm::vec3>& Geometry::getNormals()
+{
+	return normals;
+}
+
+std::vector<unsigned int>& Geometry::getIndices()
+{
+	return indices;
 }
 
 void Geometry::parse(const char * filepath)

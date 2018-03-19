@@ -56,7 +56,10 @@ void Transform::update()
 
 Transform* Transform::addChild(Node* node)
 {
-	children.push_back(node);
+	if(node != NULL)
+	{
+		children.push_back(node);
+	}
 	return this;
 }
 

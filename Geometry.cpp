@@ -305,3 +305,29 @@ void Geometry::centerAndResize()
 		vertices[i] = glm::vec3(glm::scale(glm::mat4(1.0f), glm::vec3(scaleDownAmount)) * intermVal);
 	}
 }
+
+void Geometry::centerForTerrain()
+{
+	int size = vertices.size();
+	glm::vec3 center;
+	float xMin = FLT_MAX;
+	float xMax = FLT_MIN;
+	float yMax = FLT_MIN;
+	float zMin = FLT_MAX;
+	float zMax = FLT_MIN;
+	float scaleDownAmount = 0;
+	glm::vec4 intermVal;
+	for (int i = 0; i < size; ++i)
+	{
+		xMin = (vertices[i].x < xMin) ? vertices[i].x : xMin;
+		xMax = (vertices[i].x > xMax) ? vertices[i].x : xMax;
+		yMax = (vertices[i].y > yMax) ? vertices[i].y : yMax;
+		zMin = (vertices[i].z < zMin) ? vertices[i].z : zMin;
+		zMax = (vertices[i].z > zMax) ? vertices[i].z : zMax;
+	}
+	center = glm::vec3((xMax + xMin) / 2.0f, yMax, (zMax + zMin) / 2.0f);
+	for (int i = 0; i < vertices.size(); ++i)
+	{
+		vertices[i] = (glm::translate(glm::mat4(1.0f), (center * -1.0f)) * glm::vec4(vertices[i], 1));
+	}
+}

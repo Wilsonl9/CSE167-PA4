@@ -38,6 +38,7 @@ public:
 	std::vector<glm::vec3>& getVertices();
 	std::vector<glm::vec3>& getNormals();
 	std::vector<unsigned int>& getIndices();
+	void centerForTerrain();
 
 private:
 	bool initialized;
